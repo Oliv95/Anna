@@ -2,6 +2,7 @@ import discord,logging,re,subprocess,magic
 
 client = discord.Client()
 client.login('disbotdisbot@gmail.com','password')
+admins = ['oliv']
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -10,14 +11,11 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 @client.event
-def on_message_edit(before,after):
-    content = after.content
-    if content.startswith('!card'):
-        fetch_card(after)
-
-@client.event
 def on_message(message):
     content = message.content
+
+    #card fetch command is allways tried
+    fetch_card_cmd(message)
 
     #log message
     if message.channel.is_default_channel():
@@ -34,16 +32,11 @@ def on_message(message):
 
     #exit command
     if content.startswith('!exit') or content.startswith('!sudoku'):
-        client.send_message(message.channel, 'killing myself, goodbye cruel world')
-        client.logout()
+        exit_cmd(message)
 
     #echo command
     elif content.startswith('!echo'):
         client.send_message(message.channel, content[5::])
-
-    #card fetch command
-    elif content.startswith('!card'):
-        fetch_card(message)
 
 @client.event
 def on_ready():
@@ -52,16 +45,19 @@ def on_ready():
     print(client.user.id)
     print('--------')
 
-def fetch_card(message):
-        card_name = message.content[5::]#.strip()
-        #card_name = card_name.replace("'","")
-        #card_name = card_name.replace(",","")
-        #card_name = re.sub(r'\s+',' ',card_name)
-        try:
-            file_name = magic.get_url(card_name)
-            client.send_file(message.channel, file_name)
-        except KeyError:
-            print(message.channel, 'failed to find card: ' + card_name)
-            client.send_message(message.channel, 'failed to find card: ' + card_name)
+def fetch_card_cmd(message):
+        #tries to get the image file to send to discord
+        #prints error message if card cannot be found
+        file_names = magic.get_url(message.content)
+        if file_names:
+            for file_name in file_names:
+                client.send_file(message.channel, file_name)
+
+def exit_cmd(message):
+    if message.author.name.lower() in admins:
+        client.send_message(message.channel, 'killing myself, goodbye cruel world')
+        client.logout()
+    else:
+        client.send_message(message.channel, 'fuck off')
 
 client.run()
