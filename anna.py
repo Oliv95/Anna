@@ -1,4 +1,4 @@
-import discord,logging,re,subprocess,magic
+import discord,logging,re,subprocess,magic,sys
 
 client = discord.Client()
 client.login('disbotdisbot@gmail.com','password')
@@ -14,14 +14,29 @@ logger.addHandler(handler)
 def on_message(message):
     content = message.content
 
-    #card fetch command is allways tried
-    fetch_card_cmd(message)
+    #card fetch command
+    if '[' in content:
+        fetch_card_cmd(message)
+
+    #exit command
+    elif content.startswith('!exit') or content.startswith('!sudoku'):
+        exit_cmd(message)
+
+    #reboot command
+    elif content.startswith('!reboot'):
+        exit_cmd(message,'attempting to reboot')
+        sys.exit(1)
+
+    #echo command
+    elif content.startswith('!echo'):
+        client.send_message(message.channel, content[5::])
 
     #log message
     if message.channel.is_default_channel():
         user     = message.author.name + ': '
         log_msg  = content+'\n'
         mentions = ""
+        #substitute the users id for their nick in the for the log
         for usr in message.mentions:
             mentions += usr.name + ','
         log_msg  = re.sub(r'<.*>',mentions,log_msg)
@@ -29,14 +44,6 @@ def on_message(message):
             f.write(user + log_msg)
             print("logging")
             print(user + log_msg)
-
-    #exit command
-    if content.startswith('!exit') or content.startswith('!sudoku'):
-        exit_cmd(message)
-
-    #echo command
-    elif content.startswith('!echo'):
-        client.send_message(message.channel, content[5::])
 
 @client.event
 def on_ready():
@@ -46,18 +53,18 @@ def on_ready():
     print('--------')
 
 def fetch_card_cmd(message):
-        #tries to get the image file to send to discord
-        #prints error message if card cannot be found
+        '''sends all the cards that appear in the message to discord'''
         file_names = magic.get_url(message.content)
         if file_names:
             for file_name in file_names:
                 client.send_file(message.channel, file_name)
 
-def exit_cmd(message):
+def exit_cmd(message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
+    '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
     if message.author.name.lower() in admins:
-        client.send_message(message.channel, 'killing myself, goodbye cruel world')
+        client.send_message(message.channel,logout_msg)
         client.logout()
     else:
-        client.send_message(message.channel, 'fuck off')
+        client.send_message(message.channel, error_msg)
 
 client.run()

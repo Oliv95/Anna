@@ -1,9 +1,8 @@
 import json,requests,subprocess,shlex,re
 
 def get_url(msg):
-    '''returns file name of the card image file'''
-    #puts the name into correct form
-    print(msg)
+    '''returns a list of filenames for all cards that appear in the msg'''
+    #get all of the potential card names
     card_names = re.findall('\[(.*?)\]',msg)
     file_names = []
     for card in card_names:
@@ -17,6 +16,7 @@ def get_url(msg):
         try:
             editions = data['editions']
         except KeyError:
+            #card name incorrect, try the next one in the list
             continue
         m_id = 0
         #get the first multiverse id
@@ -30,6 +30,7 @@ def get_url(msg):
         m_id = str(m_id) + '&type=card'
         file_name = 'image/' + m_id + '.jpg'
         img_url += m_id
+        #call shell script that download the image
         shell_cmd = './dwnMagic.sh ' + file_name + ' ' + img_url
         subprocess.call(shlex.split(shell_cmd))
         print('Done fetching ' + card)
@@ -38,10 +39,10 @@ def get_url(msg):
 
 
 def format_card(card):
+        '''puts the card name into the correct form for deckbrew '''
         card = card.strip()
         card = card.replace("'","")
         card = card.replace(",","")
-        #card = re.sub(r'\s+',' ',card)
         card = " ".join(card.split())
         card = card.replace(' ','-').lower()
         return card
