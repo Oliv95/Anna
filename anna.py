@@ -2,7 +2,8 @@ import discord,logging,re,subprocess,magic,sys
 
 client = discord.Client()
 client.login('disbotdisbot@gmail.com','password')
-admins = ['oliv']
+
+admins = []
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -21,6 +22,7 @@ def on_message(message):
     #exit command
     elif content.startswith('!exit') or content.startswith('!sudoku'):
         exit_cmd(message)
+        sys.exit(0)
 
     #reboot command
     elif content.startswith('!reboot'):
@@ -47,6 +49,8 @@ def on_message(message):
 
 @client.event
 def on_ready():
+    read_conf()
+    print("admins are: " + str(admins))
     print("logged in as")
     print(client.user.name)
     print(client.user.id)
@@ -66,5 +70,11 @@ def exit_cmd(message,logout_msg='killing myself, goodbye cruel world',error_msg 
         client.logout()
     else:
         client.send_message(message.channel, error_msg)
+
+def read_conf():
+    global admins
+    f = open('anna.conf')
+    admins = f.readline()[7:-1].split(',')
+    f.close()
 
 client.run()
