@@ -1,6 +1,6 @@
 import json,requests,subprocess,shlex,re
 
-def get_url(msg):
+def get_filenames(msg):
     '''returns a list of filenames for all cards that appear in the msg'''
     #get all of the potential card names
     card_names = re.findall('\[(.*?)\]',msg)

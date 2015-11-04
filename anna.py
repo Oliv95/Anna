@@ -1,7 +1,10 @@
 import discord,logging,re,subprocess,magic,sys
 
 client = discord.Client()
+# if the logging to discord fails, exit
 client.login('disbotdisbot@gmail.com','password')
+if not client.is_logged_in:
+    sys.exit(2)
 
 admins = []
 
@@ -58,7 +61,7 @@ def on_ready():
 
 def fetch_card_cmd(message):
         '''sends all the cards that appear in the message to discord'''
-        file_names = magic.get_url(message.content)
+        file_names = magic.get_filenames(message.content)
         if file_names:
             for file_name in file_names:
                 client.send_file(message.channel, file_name)
