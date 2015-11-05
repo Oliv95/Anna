@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-RBC=1
+RBC=100
 while true; do
 python anna.py
 ECODE=$?

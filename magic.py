@@ -21,6 +21,7 @@ def get_filenames(msg):
         file_name = card+'.jpg'
         dwnl_img(img_url,file_name)
         file_names.append(file_name)
+    failed_matches = [s.replace('+',' ') for s in failed_matches]
     return (file_names,failed_matches)
 
 def format_card(card):

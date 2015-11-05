@@ -30,7 +30,7 @@ def on_message(message):
     #reboot command
     elif content.startswith('!reboot'):
         client.send_message(message.channel,'attempting to reboot')
-        sys.exit(1)
+        sys.exit(100)
 
     #echo command
     elif content.startswith('!echo'):
@@ -62,7 +62,7 @@ def on_ready():
 
 def fetch_card_cmd(message):
         '''sends all the cards that appear in the message to discord'''
-        (file_names,failed) = magic.get_url(message.content)
+        (file_names,failed) = magic.get_filenames(message.content)
         for file_name in file_names:
             client.send_file(message.channel, file_name)
         for card in failed:
