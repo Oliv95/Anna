@@ -35,6 +35,7 @@ def on_message(message):
     #echo command
     elif content.startswith('!echo'):
         client.send_message(message.channel, content[5::])
+        client.send_message(message.channel, 'http://i.imgur.com/3aBVp9f.jpg')
 
     #log message
     if message.channel.is_default_channel():
@@ -61,10 +62,11 @@ def on_ready():
 
 def fetch_card_cmd(message):
         '''sends all the cards that appear in the message to discord'''
-        file_names = magic.get_filenames(message.content)
-        if file_names:
-            for file_name in file_names:
-                client.send_file(message.channel, file_name)
+        (file_names,failed) = magic.get_url(message.content)
+        for file_name in file_names:
+            client.send_file(message.channel, file_name)
+        for card in failed:
+            client.send_message(message.channel, 'Could not find: '+card)
 
 def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
     '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
