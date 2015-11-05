@@ -18,7 +18,7 @@ def get_filenames(msg):
             continue
         img_url += m_id
         img_url += '&type=card&.jpg'
-        file_name = 'image/'+card+'.jpg'
+        file_name = card+'.jpg'
         dwnl_img(img_url,file_name)
         file_names.append(file_name)
     failed_matches = [s.replace('+',' ') for s in failed_matches]

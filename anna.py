@@ -1,4 +1,4 @@
-import discord,logging,re,subprocess,magic,sys
+import discord,logging,re,subprocess,magic,sys,os
 
 client = discord.Client()
 # if the logging to discord fails, exit
@@ -65,6 +65,8 @@ def fetch_card_cmd(message):
         (file_names,failed) = magic.get_filenames(message.content)
         for file_name in file_names:
             client.send_file(message.channel, file_name)
+            os.remove(file_name)
+            print('done with file: ' + file_name + ' will now delete it')
         for card in failed:
             client.send_message(message.channel, 'Could not find: '+card)
 
