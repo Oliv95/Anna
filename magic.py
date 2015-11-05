@@ -1,48 +1,43 @@
 import json,requests,subprocess,shlex,re
+import urllib.request
 
 def get_url(msg):
     '''returns a list of filenames for all cards that appear in the msg'''
     #get all of the potential card names
     card_names = re.findall('\[(.*?)\]',msg)
     file_names = []
+    failed_matches = []
     for card in card_names:
         card = format_card(card)
+        print(card)
         url = 'https://api.deckbrew.com/mtg/cards/' + card
         img_url = 'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid='
-        
-        #parse json data from deckbrew
-        data = requests.get(url).json()
-        editions = []
-        try:
-            editions = data['editions']
-        except KeyError:
-            #card name incorrect, try the next one in the list
+        m_id = get_m_id(card)
+        if not m_id:
+            failed_matches.append(card)
             continue
-        m_id = 0
-        #get the first multiverse id
-        m_id = editions[0]
-        #try and find a better one
-        arbitrary_constant_that_seems_to_work = 10000
-        for edition in editions:
-            if edition['multiverse_id'] > arbitrary_constant_that_seems_to_work:
-                m_id = edition['multiverse_id']
-                break
-        m_id = str(m_id) + '&type=card'
-        file_name = 'image/' + m_id + '.jpg'
         img_url += m_id
-        #call shell script that download the image
-        shell_cmd = './dwnMagic.sh ' + file_name + ' ' + img_url
-        subprocess.call(shlex.split(shell_cmd))
-        print('Done fetching ' + card)
+        img_url += '&type=card&.jpg'
+        file_name = card+'.jpg'
+        dwnl_img(img_url,file_name)
         file_names.append(file_name)
-    return file_names
-
+    return (file_names,failed_matches)
 
 def format_card(card):
-        '''puts the card name into the correct form for deckbrew '''
+        '''puts the card name into the correct form for gather'''
         card = card.strip()
-        card = card.replace("'","")
-        card = card.replace(",","")
-        card = " ".join(card.split())
-        card = card.replace(' ','-').lower()
-        return card
+        card = "+".join(card.split())
+        return card.lower()
+
+def get_m_id(card_name):
+    try:
+        page = urllib.request.urlopen("http://gatherer.wizards.com/Pages/Card/Details.aspx?name="+card_name).read()
+        m_id = re.search("multiverseid=([0-9]*)", str(page)).group(1)
+        return m_id
+    except AttributeError:
+        return False
+
+def dwnl_img(img_url,file_name):
+    shell_cmd = './dwnMagic.sh ' + file_name + ' ' + img_url
+    subprocess.call(shlex.split(shell_cmd))
+    print('done fetching card')
