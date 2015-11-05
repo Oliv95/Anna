@@ -24,12 +24,12 @@ def on_message(message):
 
     #exit command
     elif content.startswith('!exit') or content.startswith('!sudoku'):
-        exit_cmd(message)
-        sys.exit(0)
+        if exit_cmd(admins,message):
+            sys.exit(0)
 
     #reboot command
     elif content.startswith('!reboot'):
-        exit_cmd(message,'attempting to reboot')
+        client.send_message(message.channel,'attempting to reboot')
         sys.exit(1)
 
     #echo command
@@ -66,13 +66,15 @@ def fetch_card_cmd(message):
             for file_name in file_names:
                 client.send_file(message.channel, file_name)
 
-def exit_cmd(message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
+def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
     '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
     if message.author.name.lower() in admins:
         client.send_message(message.channel,logout_msg)
         client.logout()
+        return True
     else:
         client.send_message(message.channel, error_msg)
+        return False
 
 def read_conf():
     global admins
