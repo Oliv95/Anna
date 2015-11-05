@@ -1,12 +1,30 @@
 import discord,logging,re,subprocess,magic,sys,os
 
+admins = []
+email = ""
+password = ""
+
+def read_conf():
+    global admins
+    global email
+    global password
+    f = open('anna.conf')
+    for line in f.readlines():
+        if line.startswith('admins='):
+            admins.extend(line[7:-1].split(','))
+        elif line.startswith('login='):
+            login = line[6:-1].split(',')
+            print(str(login))
+            email = login[0]
+            password = login[1]
+    f.close()
+
+read_conf()
 client = discord.Client()
 # if the logging to discord fails, exit
-client.login('disbotdisbot@gmail.com','password')
+client.login(email,password)
 if not client.is_logged_in:
     sys.exit(2)
-
-admins = []
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -53,7 +71,6 @@ def on_message(message):
 
 @client.event
 def on_ready():
-    read_conf()
     print("admins are: " + str(admins))
     print("logged in as")
     print(client.user.name)
@@ -79,14 +96,6 @@ def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',err
     else:
         client.send_message(message.channel, error_msg)
         return False
-
-def read_conf():
-    global admins
-    f = open('anna.conf')
-    for line in f.readlines():
-        if line.startswith('admins='):
-            admins.extend(line[7:-1].split(','))
-    f.close()
 
 def add_admin(id,user_id):
     global admins
