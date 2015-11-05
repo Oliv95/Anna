@@ -72,7 +72,7 @@ def fetch_card_cmd(message):
 
 def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
     '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
-    if message.author.name.lower() in admins:
+    if str(message.author.id) in admins:
         client.send_message(message.channel,logout_msg)
         client.logout()
         return True
@@ -83,7 +83,18 @@ def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',err
 def read_conf():
     global admins
     f = open('anna.conf')
-    admins = f.readline()[7:-1].split(',')
+    for line in f.readlines():
+        if line.startswith('admins='):
+            admins.extend(line[7:-1].split(','))
     f.close()
+
+def add_admin(id,user_id):
+    global admins
+    if id in admins and not user_id in admins:
+        with open('anna.conf','a') as f:
+            f.write('admins='+user_id)
+        return True
+    else:
+        return False
 
 client.run()
