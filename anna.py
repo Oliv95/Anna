@@ -7,7 +7,7 @@ password = ""
 def read_conf():
     global admins
     global email
-    global password
+    global password 
     f = open('anna.conf')
     for line in f.readlines():
         if line.startswith('admins='):
@@ -39,6 +39,8 @@ def on_message_edit(before,after):
 
 @client.event
 def on_message(message):
+    if message.author.name == 'Anna':
+        return
     content = message.content
 
     #card fetch command
@@ -58,7 +60,22 @@ def on_message(message):
     #echo command
     elif content.startswith('!echo'):
         client.send_message(message.channel, content[5::])
-        client.send_message(message.channel, 'http://i.imgur.com/3aBVp9f.jpg')
+
+    #help command
+    elif content.startswith('!help'):
+        help_text = r"""
+                    The following commands and features are available:
+                    Echo command will echo back what you typed, example !echo hello Anna
+                    Reboot command will cause me to attempt a reboot, example !reboot
+                    Exit command will cause me to become very turned off, example !exit (admins only)
+                    ------------------------------------------------------------------
+                    You can also type the name of a magic card withing square brackets 
+                    and have me fetch an image of that card, example [forest]
+                    You can also use double square brackets for a search using magiccards.info syntax,
+                    example [[o:flashback]] see website for more info. 
+                    -------------------------------------------------------------------
+                    My source code and licence is available on github.com/Oliv95/Anna"""
+        client.send_message(message.channel,help_text)
 
     #log message
     if message.channel.is_default_channel():
