@@ -1,4 +1,4 @@
-import discord,logging,re,subprocess,magic,sys,os
+import discord,logging,re,subprocess,magic,sys,os,mci
 
 admins = []
 email = ""
@@ -31,6 +31,11 @@ logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
+
+@client.event
+def on_message_edit(before,after):
+    if '[' in after.content:
+        fetch_card_cmd(after)
 
 @client.event
 def on_message(message):
@@ -79,7 +84,10 @@ def on_ready():
 
 def fetch_card_cmd(message):
         '''sends all the cards that appear in the message to discord'''
-        (file_names,failed) = magic.get_filenames(message.content)
+        (img_urls,msg) = mci.image_urls(message.content)
+        for url in img_urls:
+            client.send_message(message.channel,url)
+        (file_names,failed) = magic.get_filenames(msg)
         for file_name in file_names:
             client.send_file(message.channel, file_name)
             os.remove(file_name)
