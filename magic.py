@@ -9,8 +9,6 @@ def get_filenames(msg):
     failed_matches = []
     for card in card_names:
         card = format_card(card)
-        print(card)
-        url = 'https://api.deckbrew.com/mtg/cards/' + card
         img_url = 'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid='
         m_id = get_m_id(card)
         if not m_id:
@@ -21,7 +19,6 @@ def get_filenames(msg):
         file_name = card+'.jpg'
         dwnl_img(img_url,file_name)
         file_names.append(file_name)
-    failed_matches = [s.replace('+',' ') for s in failed_matches]
     return (file_names,failed_matches)
 
 def format_card(card):
