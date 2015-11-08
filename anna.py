@@ -175,21 +175,18 @@ def rm_admins(id,user_ids):
     global admins
     global head_admins
     f = open('anna.conf','r')
-    lines = f.readlines()
+    lines = f.read()
     f.close()
     flag = False
+    f = open('anna.conf','w')
     for user_id in user_ids:
-        if id in admins and not user_id in head_admins:
-            f = open('anna.conf','w')
-            for line in lines:
-                if user_id in line:
-                    line = line.replace(user_id,'')
-                    line = line.replace(',,',',')
-                    admins.remove(user_id)
-                    flag = True
-                    if len(line) < 10:
-                        continue
-                f.write(line)
+        if id in admins and (not user_id in head_admins) and user_id in lines:
+            lines = lines.replace(user_id,'')
+            lines = lines.replace(',,',',')
+            admins.remove(user_id)
+            flag = True
+    lines = lines.replace('admins=\n','')
+    f.write(lines)
     f.close()
     return flag
 
