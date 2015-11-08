@@ -1,9 +1,9 @@
 import discord,logging,re,subprocess,magic,sys,os,mci
 
 admins = []
+head_admins = []
 email = ""
 password = ""
-
 def read_conf():
     global admins
     global email
@@ -12,6 +12,8 @@ def read_conf():
     for line in f.readlines():
         if line.startswith('admins='):
             admins.extend(line[7:-1].split(','))
+        elif line.startswith('head_admins'):
+            head_admins.extend(line[12:-1].split(','))
         elif line.startswith('login='):
             login = line[6:-1].split(',')
             print(str(login))
@@ -21,6 +23,7 @@ def read_conf():
 
 read_conf()
 client = discord.Client()
+
 # if the logging to discord fails, exit
 client.login(email,password)
 if not client.is_logged_in:
@@ -47,6 +50,35 @@ def on_message(message):
     if '[' in content:
         fetch_card_cmd(message)
 
+    #add a admin
+    elif content.startswith('!add'):
+        my_id = message.author.id
+        to_add = content[4::].strip().split(',')
+        ids = []
+        for serv in client.servers:
+            for user in serv.members:
+                if user.name in to_add:
+                    if not user.id in ids:
+                        ids.append(user.id)
+        if add_admins(my_id,ids):
+            client.send_message(message.channel, 'admins updated')
+        else:
+            client.send_message(message.channel, 'not sufficient permissions')
+
+    #remove a admin
+    elif content.startswith('!rm'):
+        my_id = message.author.id
+        to_add = content[3::].strip().split(',')
+        ids = []
+        for serv in client.servers:
+            for user in serv.members:
+                if user.name in to_add:
+                    if not user.id in ids:
+                        ids.append(user.id)
+        if rm_admins(my_id,ids):
+            client.send_message(message.channel, 'admins updated')
+        else:
+            client.send_message(message.channel, 'not sufficient permissions')
     #exit command
     elif content.startswith('!exit') or content.startswith('!sudoku'):
         if exit_cmd(admins,message):
@@ -60,6 +92,9 @@ def on_message(message):
     #echo command
     elif content.startswith('!echo'):
         client.send_message(message.channel, content[5::])
+        for l in client.servers:
+            for u in l.members:
+                print(u.name)
 
     #help command
     elif content.startswith('!help'):
@@ -94,9 +129,11 @@ def on_message(message):
 @client.event
 def on_ready():
     print("admins are: " + str(admins))
+    print("head admins are: " + str(head_admins))
     print("logged in as")
     print(client.user.name)
     print(client.user.id)
+    print("servers connected to: " + str(client.servers))
     print('--------')
 
 def fetch_card_cmd(message):
@@ -122,13 +159,38 @@ def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',err
         client.send_message(message.channel, error_msg)
         return False
 
-def add_admin(id,user_id):
+def add_admins(id,user_ids):
     global admins
-    if id in admins and not user_id in admins:
-        with open('anna.conf','a') as f:
-            f.write('admins='+user_id)
-        return True
-    else:
-        return False
+    flag = False
+    f = open('anna.conf','a')
+    for user_id in user_ids:
+        if id in admins and not user_id in admins:
+            f.write('admins='+user_id+'\n')
+            admins.append(user_id)
+            flag = True
+    f.close()
+    return flag
+
+def rm_admins(id,user_ids):
+    global admins
+    global head_admins
+    f = open('anna.conf','r')
+    lines = f.readlines()
+    f.close()
+    flag = False
+    for user_id in user_ids:
+        if id in admins and not user_id in head_admins:
+            f = open('anna.conf','w')
+            for line in lines:
+                if user_id in line:
+                    line = line.replace(user_id,'')
+                    line = line.replace(',,',',')
+                    admins.remove(user_id)
+                    flag = True
+                    if len(line) < 10:
+                        continue
+                f.write(line)
+    f.close()
+    return flag
 
 client.run()
