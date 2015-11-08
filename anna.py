@@ -60,11 +60,25 @@ def on_message(message):
                 if user.name in to_add:
                     if not user.id in ids:
                         ids.append(user.id)
-        if add_admin(my_id,ids):
+        if add_admins(my_id,ids):
             client.send_message(message.channel, 'admins updated')
         else:
             client.send_message(message.channel, 'not sufficient permissions')
 
+    #remove a admin
+    elif content.startswith('!rm'):
+        my_id = message.author.id
+        to_add = content[3::].strip().split(',')
+        ids = []
+        for serv in client.servers:
+            for user in serv.members:
+                if user.name in to_add:
+                    if not user.id in ids:
+                        ids.append(user.id)
+        if rm_admins(my_id,ids):
+            client.send_message(message.channel, 'admins updated')
+        else:
+            client.send_message(message.channel, 'not sufficient permissions')
     #exit command
     elif content.startswith('!exit') or content.startswith('!sudoku'):
         if exit_cmd(admins,message):
@@ -145,27 +159,38 @@ def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',err
         client.send_message(message.channel, error_msg)
         return False
 
-def add_admin(id,user_ids):
+def add_admins(id,user_ids):
     global admins
     flag = False
     f = open('anna.conf','a')
     for user_id in user_ids:
         if id in admins and not user_id in admins:
-            f.write('admins='+user_id)
+            f.write('admins='+user_id+'\n')
             admins.append(user_id)
             flag = True
     f.close()
     return flag
-def del_admin(id,user_id):
+
+def rm_admins(id,user_ids):
     global admins
     global head_admins
-    if id in admins and not user_id in head_admins:
-        with open('anna.conf','w') as f:
-            for line in f.readlines():
+    f = open('anna.conf','r')
+    lines = f.readlines()
+    f.close()
+    flag = False
+    for user_id in user_ids:
+        if id in admins and not user_id in head_admins:
+            f = open('anna.conf','w')
+            for line in lines:
                 if user_id in line:
                     line = line.replace(user_id,'')
-                    f.write(line)
-                    return True
-    return False
+                    line = line.replace(',,',',')
+                    admins.remove(user_id)
+                    flag = True
+                    if len(line) < 10:
+                        continue
+                f.write(line)
+    f.close()
+    return flag
 
 client.run()
