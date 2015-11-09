@@ -103,6 +103,8 @@ def on_message(message):
                     Echo command will echo back what you typed, example !echo hello Anna
                     Reboot command will cause me to attempt a reboot, example !reboot
                     Exit command will cause me to become very turned off, example !exit (admins only)
+                    Add command will add one or more admis, exmaple !add name1,name2 (admins only)
+                    Rm command remove add one or more admis, exmaple !rm name1,name2 (admins only)
                     ------------------------------------------------------------------
                     You can also type the name of a magic card withing square brackets 
                     and have me fetch an image of that card, example [forest]
