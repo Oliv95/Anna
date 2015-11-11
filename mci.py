@@ -13,6 +13,8 @@ def image_urls(msg):
         card_url = urllib.request.urlopen(url).read()[2:-2]
         card_url = card_url.decode("utf-8")
         print('fetching card: '+card)
+        if not card_url:
+            continue
         print('@ url : '+card_url)
         file_names.append(card_url)
         if (not card in basics) and is_doubleface(card_url):
