@@ -8,8 +8,8 @@ class Anna:
         self.password = ""
         self.client = client#discord.Client()
         self.logger = None
-        read_conf(self)
-        login()
+        self.read_conf()
+        self.login()
 
     def read_conf(self):
         f = open('anna.conf')
@@ -37,7 +37,7 @@ class Anna:
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         selflogger.addHandler(handler)
 
-    def add_admins(id,user_ids):
+    def add_admins(self,id,user_ids):
         global admins
         flag = False
         f = open('anna.conf','a')
@@ -49,7 +49,7 @@ class Anna:
         f.close()
         return flag
 
-    def rm_admins(id,user_ids):
+    def rm_admins(self,id,user_ids):
         global admins
         global head_admins
         f = open('anna.conf','r')
@@ -68,7 +68,7 @@ class Anna:
         f.close()
         return flag
 
-    def fetch_card_cmd(message):
+    def fetch_card_cmd(self,message):
             '''sends all the cards that appear in the message to discord'''
             (img_urls,msg) = mci.image_urls(message.content)
             for url in img_urls:
@@ -81,7 +81,7 @@ class Anna:
             for card in failed:
                 client.send_message(message.channel, 'Could not find: '+card)
 
-    def exit_cmd(admins,message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
+    def exit_cmd(self,admins,message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
         '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
         if str(message.author.id) in admins:
             client.send_message(message.channel,logout_msg)
@@ -91,7 +91,7 @@ class Anna:
             client.send_message(message.channel, error_msg)
             return False
 
-    def log_msg():
+    def log_msg(self):
         if message.channel.is_default_channel():
             user     = message.author.name + ': '
             log_msg  = content+'\n'
