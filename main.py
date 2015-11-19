@@ -96,8 +96,19 @@ def main():
 
     @client.event
     def on_message(message):
-        if message.content.startswith('!echo'):
-            client.send_message(message.channel, message.content[5::])
+        bot.log_msg(message)
+        if message.author.name == 'Anna':
+            return
+        elif '[' in message.content:
+            bot.fetch_card_cmd(message)
+        elif message.content.startswith('!echo'):
+            bot.echo_msg(message)
+        elif message.content.startswith('!reboot'):
+            if bot.reboot_cmd(message):
+                sys.exit(100)
+        elif message.content.startswith('!exit'):
+            if bot.exit_cmd(message):
+                sys.exit(0)
 
     client.run()
 

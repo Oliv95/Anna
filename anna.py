@@ -72,29 +72,36 @@ class Anna:
             '''sends all the cards that appear in the message to discord'''
             (img_urls,msg) = mci.image_urls(message.content)
             for url in img_urls:
-                client.send_message(message.channel,url)
+                self.client.send_message(message.channel,url)
             (file_names,failed) = magic.get_filenames(msg)
             for file_name in file_names:
-                client.send_file(message.channel, file_name)
+                self.client.send_file(message.channel, file_name)
                 os.remove(file_name)
                 print('done with file: ' + file_name + ' will now delete it')
             for card in failed:
                 client.send_message(message.channel, 'Could not find: '+card)
 
-    def exit_cmd(self,admins,message,logout_msg='killing myself, goodbye cruel world',error_msg = 'fuck off'):
+    def exit_cmd(self,message):
         '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
-        if str(message.author.id) in admins:
-            client.send_message(message.channel,logout_msg)
-            client.logout()
+        if str(message.author.id) in self.admins:
+            self.client.send_message(message.channel,'Shutting off')
+            self.client.logout()
             return True
         else:
-            client.send_message(message.channel, error_msg)
+            client.send_message(message.channel, 'Error: You are not an admin')
             return False
 
-    def log_msg(self):
+    def reboot_cmd(self,message):
+        self.client.send_message(message.channel,'Attempting to reboot')
+        return True
+
+    def echo_msg(self,message):
+        self.client.send_message(message.channel, message.content[5::])
+
+    def log_msg(self,message):
         if message.channel.is_default_channel():
             user     = message.author.name + ': '
-            log_msg  = content+'\n'
+            log_msg  = message.content+'\n'
             mentions = ""
             #substitute the users id for their nick in the for the log
             for usr in message.mentions:
