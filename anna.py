@@ -1,9 +1,11 @@
-import discord,logging,re,subprocess,magic,sys,os,mci
+import discord,logging,re,subprocess,magic,sys,os,mci,markov
 
 admins = []
 head_admins = []
 email = ""
 password = ""
+f = open('main_log.log')
+textGen = markov.Markov(f)
 def read_conf():
     global admins
     global email
@@ -50,6 +52,11 @@ def on_message(message):
     if '[' in content:
         fetch_card_cmd(message)
 
+    elif content.startswith('!say'):
+        size = content[5::]
+        text = textGen.generate_markov_text(int(size))
+        client.send_message(message.channel, text)
+
     #add a admin
     elif content.startswith('!add'):
         my_id = message.author.id
@@ -82,11 +89,13 @@ def on_message(message):
     #exit command
     elif content.startswith('!exit') or content.startswith('!sudoku'):
         if exit_cmd(admins,message):
+            f.close()
             sys.exit(0)
 
     #reboot command
     elif content.startswith('!reboot'):
         client.send_message(message.channel,'attempting to reboot')
+        f.close()
         sys.exit(100)
 
     #echo command
