@@ -6,6 +6,7 @@ email = ""
 password = ""
 f = open('main_log.log')
 textGen = markov.Markov(f)
+f.close()
 def read_conf():
     global admins
     global email
@@ -89,13 +90,11 @@ def on_message(message):
     #exit command
     elif content.startswith('!exit') or content.startswith('!sudoku'):
         if exit_cmd(admins,message):
-            f.close()
             sys.exit(0)
 
     #reboot command
     elif content.startswith('!reboot'):
         client.send_message(message.channel,'attempting to reboot')
-        f.close()
         sys.exit(100)
 
     #echo command
