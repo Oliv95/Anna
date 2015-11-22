@@ -2,7 +2,7 @@
 
 RBC=100
 while true; do
-python anna.py
+python main.py
 ECODE=$?
 if [ $RBC -eq $ECODE ]; then
 echo rebooting
