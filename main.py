@@ -38,7 +38,7 @@ def main():
         if message.author.name == 'Anna':
             return
         elif '[' in message.content:
-            bot.fetch_card_cmd(message)
+            bot.fetch_card(message)
         elif message.content.startswith('!echo'):
             bot.echo_msg(message)
         elif message.content.startswith('!help'):
@@ -48,9 +48,11 @@ def main():
         elif message.content.startswith('!rm'):
             bot.rm_admins(message)
         elif message.content.startswith('!reboot'):
-            bot.reboot_cmd(message)
+            bot.reboot(message)
+        elif message.content.startswith('!say'):
+            bot.say(message)
         elif message.content.startswith('!exit'):
-            bot.exit_cmd(message)
+            bot.exit(message)
 
     client.run()
 

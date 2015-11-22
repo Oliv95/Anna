@@ -1,7 +1,7 @@
-import discord,logging,re,subprocess,magic,sys,os,mci
+import discord,logging,re,subprocess,magic,sys,os,mci,markov
 
 class Anna:
-    def __init__(self,client,help_text="Help text not configured"):
+    def __init__(self,client,help_text="Help text not configured",markov_file='main_log.log'):
         self.admins = []
         self.head_admins = []
         self.email = ""
@@ -10,6 +10,7 @@ class Anna:
         self.client = client#discord.Client()
         self.logger = None
         self.read_conf()
+        self.textGen = markov.Markov(markov_file)
         self.login()
 
     def read_conf(self):
@@ -52,6 +53,7 @@ class Anna:
             f.close()
             return flag
 
+        message.content.startswith('!add'):
         my_id = message.author.id
         to_add = message.content[4::].strip().split(',')
         ids = []
@@ -86,11 +88,6 @@ class Anna:
             return flag
 
         my_id = message.author.id
-
-        print("-------")
-        print(str(my_id))
-        print("-------")
-
         to_add = message.content[3::].strip().split(',')
         ids = []
         for serv in self.client.servers:
@@ -102,7 +99,7 @@ class Anna:
         else:
             self.client.send_message(message.channel, 'not sufficient permissions')
 
-    def fetch_card_cmd(self,message):
+    def fetch_card(self,message):
             '''sends all the cards that appear in the message to discord'''
             (img_urls,msg) = mci.image_urls(message.content)
             for url in img_urls:
@@ -115,7 +112,7 @@ class Anna:
             for card in failed:
                 client.send_message(message.channel, 'Could not find: '+card)
 
-    def exit_cmd(self,message):
+    def exit(self,message):
         '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
         if str(message.author.id) in self.admins:
             self.client.send_message(message.channel,'Shutting down')
@@ -125,12 +122,17 @@ class Anna:
             client.send_message(message.channel, 'Error: You are not an admin')
             return False
 
-    def reboot_cmd(self,message):
+    def reboot(self,message):
         self.client.send_message(message.channel,'Attempting to reboot')
         sys.exit(100)
 
     def echo_msg(self,message):
         self.client.send_message(message.channel, message.content[5::])
+
+    def say(self,message):
+        size = int(message.content[4::])
+        text = self.textGen.generate_markov_text(size)
+        self.client.send_message(message.channel, text)
 
     def help_msg(self,message):
         self.client.send_message(message.channel, self.help_text)
