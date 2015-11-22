@@ -8,6 +8,7 @@ class Markov(object):
 		self.words = self.file_to_words()
 		self.word_size = len(self.words)
 		self.database()
+    open_file.close()
 		
 	
 	def file_to_words(self):
