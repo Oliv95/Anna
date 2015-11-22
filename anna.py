@@ -10,7 +10,7 @@ class Anna:
         self.client = client#discord.Client()
         self.logger = None
         self.read_conf()
-        self.textGen = markov.Markov(markov_file)
+        self.textGen = markov.Markov(open(markov_file))
         self.login()
 
     def read_conf(self):
@@ -53,7 +53,6 @@ class Anna:
             f.close()
             return flag
 
-        message.content.startswith('!add'):
         my_id = message.author.id
         to_add = message.content[4::].strip().split(',')
         ids = []
