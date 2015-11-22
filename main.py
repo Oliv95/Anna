@@ -5,6 +5,7 @@ def main():
                     The following commands and features are available:
 
                     Echo command will echo back what you typed, example !echo hello Anna
+                    Say command will display random text of the given length, example !say 5 (text will be 5 words)
                     Help command will display this help message example !help
                     Reboot command will cause me to attempt a reboot, example !reboot
                     Exit command will cause me to become very turned off, example !exit (admins only)
