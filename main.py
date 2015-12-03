@@ -45,8 +45,12 @@ def main():
             bot.echo_msg(message)
         elif message.content.startswith('!help'):
             bot.help_msg(message)
+        elif message.content.startswith('!about'):
+            bot.about_msg(message)
         elif message.content.startswith('!add'):
             bot.add_admins(message)
+        elif message.content.startswith('!roll'):
+            bot.roll(message)
         elif message.content.startswith('!rm'):
             bot.rm_admins(message)
         elif message.content.startswith('!reboot'):

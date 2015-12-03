@@ -1,4 +1,4 @@
-import discord,logging,re,subprocess,magic,sys,os,mci,markov
+import discord,logging,re,subprocess,magic,sys,os,mci,markov,random,time
 
 class Anna:
     def __init__(self,client,help_text="Help text not configured",markov_file='main_log.log'):
@@ -12,6 +12,7 @@ class Anna:
         self.read_conf()
         self.textGen = markov.Markov(open(markov_file))
         self.login()
+        self.start_time = time.time()
 
     def read_conf(self):
         f = open('anna.conf')
@@ -135,6 +136,23 @@ class Anna:
 
     def help_msg(self,message):
         self.client.send_message(message.channel, self.help_text)
+
+    def about_msg(self,message):
+        now = time.time()
+        uptime = int(now - self.start_time)
+        mins = uptime // 60
+        secs = uptime % 60
+        text = "Contributors are Axel Olivecrona\n Current uptime is minutes {0} and seconds {1} \n".format(mins,secs)
+        self.client.send_message(message.channel, text)
+
+    def roll(self,message):
+        limit = int(message.content[5::])
+        error_string = "negative numbers not ok!"
+        if 0 >= limit:
+            self.client.send_message(message.channel,error_string)
+        else:
+            roll = random.randint(0,limit)
+            self.client.send_message(message.channel, str(roll))
 
     def log_msg(self,message):
         if message.channel.is_default_channel():
