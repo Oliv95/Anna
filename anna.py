@@ -142,7 +142,8 @@ class Anna:
         uptime = int(now - self.start_time)
         mins = uptime // 60
         secs = uptime % 60
-        text = "Contributors are Axel Olivecrona\n Current uptime is minutes {0} and seconds {1} \n".format(mins,secs)
+        contributors = open('contributors').read().strip()
+        text = "Contributors are {0}\n Current uptime is minutes {1} and seconds {2} \n".format(contributors,mins,secs)
         self.client.send_message(message.channel, text)
 
     def roll(self,message):
