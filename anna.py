@@ -116,7 +116,19 @@ class Anna:
             self.client.send_message(message.channel, 'not sufficient permissions')
 
     def rnick(self,message):
-        pass
+        if self.is_admin(message):
+            f = open('nicks.conf','r')
+            lines = f.read()
+            f.close()
+            to_remove = message.content[8::].strip().split(',')
+            nicks = lines.split('\n')
+            f = lambda s: not any(map(s.startswith,to_remove))
+            left = list(filter(f,nicks))
+            res = "\n".join(left)
+            f = open('nicks.conf','w')
+            f.write(res)
+            f.close()
+            self.client.send_message(message.channel, 'reboot to have change take effect')
 
     def anick(self,message):
         if self.is_admin(message):
