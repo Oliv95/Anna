@@ -7,10 +7,16 @@ def main():
                     Echo command will echo back what you typed, example !echo hello Anna
                     Say command will display random text of the given length, example !say 5 (text will be 5 words)
                     Help command will display this help message example !help
+                    About command will display uptime and a list of contributors, example !about
                     Reboot command will cause me to attempt a reboot, example !reboot
                     Exit command will cause me to become very turned off, example !exit (admins only)
                     Add command will add an admin, example !add <name> (admins only)
                     Rm command will remove an admin example !rm <name> (admins only)
+                    Roll command will give back a random number between 0 and the input, example !roll 100
+                    Nick command will give a magic card a nickname that it can be more easliy fetched,
+                    example !nick bob->dark confidant (admins only)
+                    Rm nick command will remove a card nick, example !rm nick bob (admins only)
+                    List nick command will list all current card nicks, example !list nick
                     ------------------------------------------------------------------
                     You can also type the name of a magic card withing square brackets 
                     and have me fetch an image of that card, example [forest]
