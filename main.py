@@ -43,6 +43,10 @@ def main():
             bot.fetch_card(message)
         elif message.content.startswith('!echo'):
             bot.echo_msg(message)
+        elif message.content.startswith('!nick'):
+            bot.anick(message)
+        elif message.content.startswith('!rm nick'):
+            bot.rnick(message)
         elif message.content.startswith('!help'):
             bot.help_msg(message)
         elif message.content.startswith('!about'):

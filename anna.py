@@ -9,10 +9,18 @@ class Anna:
         self.help_text = help_text
         self.client = client#discord.Client()
         self.logger = None
+        self.nick_dic = None
         self.read_conf()
         self.textGen = markov.Markov(open(markov_file))
         self.login()
         self.start_time = time.time()
+
+    def is_admin(self,message):
+        if not str(message.author.id) in self.admins:
+            self.client.send_message(message.channel, 'not sufficient permissions')
+            return False
+        else:
+            return True
 
     def read_conf(self):
         f = open('anna.conf')
@@ -26,6 +34,14 @@ class Anna:
                 print(str(login))
                 self.email = login[0]
                 self.password = login[1]
+        f.close()
+        f = open('nicks.conf')
+        self.nick_dic = {}
+        for line in f.readlines():
+            l = line[:-1:].split('->')
+            key = l[0].strip().lower()
+            value = l[1].strip()
+            self.nick_dic[key] = value
         f.close()
 
     def login(self):
@@ -99,9 +115,37 @@ class Anna:
         else:
             self.client.send_message(message.channel, 'not sufficient permissions')
 
+    def rnick(self,message):
+        if self.is_admin(message):
+            f = open('nicks.conf','r')
+            lines = f.read()
+            f.close()
+            to_remove = message.content[8::].strip().split(',')
+            nicks = lines.split('\n')
+            f = lambda s: not any(map(s.startswith,to_remove))
+            left = list(filter(f,nicks))
+            res = "\n".join(left)
+            f = open('nicks.conf','w')
+            f.write(res)
+            f.close()
+            self.client.send_message(message.channel, 'reboot to have change take effect')
+
+    def anick(self,message):
+        if self.is_admin(message):
+            pairs = message.content[5::].split(',')
+            f = open('nicks.conf','a')
+            for pair in pairs:
+                f.write(pair.strip()+"\n")
+            f.close()
+            self.client.send_message(message.channel, 'reboot to have change take effect')
+
     def fetch_card(self,message):
             '''sends all the cards that appear in the message to discord'''
-            (img_urls,msg) = mci.image_urls(message.content)
+            msg = message.content.lower()
+            for key in self.nick_dic.keys():
+                msg = msg.replace('[['+key+']]','[['+self.nick_dic[key]+']]')
+
+            (img_urls,msg) = mci.image_urls(msg)
             for url in img_urls:
                 self.client.send_message(message.channel,url)
             (file_names,failed) = magic.get_filenames(msg)
@@ -110,17 +154,14 @@ class Anna:
                 os.remove(file_name)
                 print('done with file: ' + file_name + ' will now delete it')
             for card in failed:
-                client.send_message(message.channel, 'Could not find: '+card)
+                self.client.send_message(message.channel, 'Could not find: '+card)
 
     def exit(self,message):
         '''If the author of the message is a admin, the bot will logout of discord otherwise print error msg'''
-        if str(message.author.id) in self.admins:
+        if self.is_admin(message):
             self.client.send_message(message.channel,'Shutting down')
             self.client.logout()
             sys.exit(0)
-        else:
-            client.send_message(message.channel, 'Error: You are not an admin')
-            return False
 
     def reboot(self,message):
         self.client.send_message(message.channel,'Attempting to reboot')
@@ -168,3 +209,4 @@ class Anna:
                 f.write(user + log_msg)
                 print("logging")
                 print(user + log_msg)
+
