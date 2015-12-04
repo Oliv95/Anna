@@ -139,6 +139,10 @@ class Anna:
             f.close()
             self.client.send_message(message.channel, 'reboot to have change take effect')
 
+    def lnick(self,message):
+        nicks = "\n".join([key + '->' + self.nick_dic[key] for key in self.nick_dic.keys()])
+        self.client.send_message(message.channel, nicks)
+
     def fetch_card(self,message):
             '''sends all the cards that appear in the message to discord'''
             msg = message.content.lower()
