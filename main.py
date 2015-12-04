@@ -43,6 +43,8 @@ def main():
             bot.fetch_card(message)
         elif message.content.startswith('!echo'):
             bot.echo_msg(message)
+        elif message.content.startswith('!list nick'):
+            bot.lnick(message)
         elif message.content.startswith('!nick'):
             bot.anick(message)
         elif message.content.startswith('!rm nick'):
