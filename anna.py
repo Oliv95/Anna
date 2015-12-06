@@ -38,9 +38,9 @@ class Anna:
         f = open('nicks.conf')
         self.nick_dic = {}
         for line in f.readlines():
-            l = line[:-1:].split('->')
-            key = l[0].strip().lower()
-            value = l[1].strip()
+            l = line[:-1:].strip().lower().split('->')
+            key = l[0]
+            value = l[1]
             self.nick_dic[key] = value
         f.close()
 
@@ -128,16 +128,32 @@ class Anna:
             f = open('nicks.conf','w')
             f.write(res)
             f.close()
-            self.client.send_message(message.channel, 'reboot to have change take effect')
+            failed = []
+            succeed = []
+            for key in to_remove:
+                try:
+                    del(self.nick_dic[key])
+                    succeed.append(key)
+                except KeyError:
+                    failed.append(key)
+            if succeed:
+                self.client.send_message(message.channel, str(succeed) + ' were removed')
+            if failed:
+                self.client.send_message(message.channel, str(failed) + ' are not nick(s), try !list nick to see all nicks')
 
     def anick(self,message):
         if self.is_admin(message):
-            pairs = message.content[5::].split(',')
+            pairs = message.content[5::].lower().split(',')
             f = open('nicks.conf','a')
             for pair in pairs:
-                f.write(pair.strip()+"\n")
+                pair = pair.strip()
+                f.write(pair+"\n")
+                l = pair.split('->')
+                key = l[0]
+                value = l[1]
+                self.nick_dic[key] = value
             f.close()
-            self.client.send_message(message.channel, 'reboot to have change take effect')
+            self.client.send_message(message.channel, 'Nicks updated')
 
     def lnick(self,message):
         nicks = "\n".join([key + '->' + self.nick_dic[key] for key in self.nick_dic.keys()])
