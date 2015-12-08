@@ -1,5 +1,7 @@
 import discord,logging,re,subprocess,magic,sys,os,mci,anna
 
+exit_code = 0
+
 def main():
     help_text = r"""
                     The following commands and features are available:
@@ -42,6 +44,7 @@ def main():
 
     @client.event
     def on_message(message):
+        global exit_code
         bot.log_msg(message)
         if message.author.name == 'Anna':
             return
@@ -67,12 +70,12 @@ def main():
             bot.rm_admins(message)
         elif message.content.startswith('!reboot'):
             bot.reboot(message)
+            exit_code = 100
         elif message.content.startswith('!say'):
             bot.say(message)
         elif message.content.startswith('!exit'):
-            bot.exit(message)
+            if bot.exit(message):
+                exit_code = 1
 
     client.run()
-
-if __name__ == "__main__":
-    main()
+    return exit_code

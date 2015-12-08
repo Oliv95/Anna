@@ -7,7 +7,7 @@ class Anna:
         self.email = ""
         self.password = ""
         self.help_text = help_text
-        self.client = client#discord.Client()
+        self.client = client
         self.logger = None
         self.nick_dic = None
         self.read_conf()
@@ -81,7 +81,6 @@ class Anna:
             self.client.send_message(message.channel, 'admins updated')
         else:
             self.client.send_message(message.channel, 'not sufficient permissions')
-
 
     def rm_admins(self,message):
 
@@ -181,11 +180,12 @@ class Anna:
         if self.is_admin(message):
             self.client.send_message(message.channel,'Shutting down')
             self.client.logout()
-            sys.exit(0)
+            return True
+        return False
 
     def reboot(self,message):
         self.client.send_message(message.channel,'Attempting to reboot')
-        sys.exit(100)
+        self.client.logout()
 
     def echo_msg(self,message):
         self.client.send_message(message.channel, message.content[5::])
