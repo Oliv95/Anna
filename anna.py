@@ -142,7 +142,7 @@ class Anna:
 
     def anick(self,message):
         if self.is_admin(message):
-            pairs = message.content[5::].lower().split(',')
+            pairs = message.content[5::].lower().split(';')
             f = open('nicks.conf','a')
             for pair in pairs:
                 pair = pair.strip()
