@@ -1,4 +1,4 @@
-import discord,logging,re,subprocess,magic,sys,os,mci,markov,random,time
+import discord,logging,re,subprocess,sys,os,mci,markov,random,time
 
 class Anna:
     def __init__(self,client,help_text="Help text not configured",markov_file='main_log.log'):
@@ -193,10 +193,12 @@ class Anna:
     def about_msg(self,message):
         now = time.time()
         uptime = int(now - self.start_time)
+        days = uptime // 86400
+        hours = uptime // 3600
         mins = uptime // 60
         secs = uptime % 60
         contributors = open('contributors').read().strip()
-        text = "Contributors are {0}\n Current uptime is minutes {1} and seconds {2} \n".format(contributors,mins,secs)
+        text = "Contributors are {0}\n Current uptime is {1} days, {2} hours, {3} minutes and {4} seconds \n".format(contributors,days,hours,mins,secs)
         self.client.send_message(message.channel, text)
 
     def roll(self,message):

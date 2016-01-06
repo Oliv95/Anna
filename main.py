@@ -1,4 +1,4 @@
-import discord,logging,re,subprocess,magic,sys,os,mci,anna
+import discord,logging,re,subprocess,sys,os,mci,anna
 
 exit_code = 0
 
