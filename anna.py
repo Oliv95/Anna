@@ -194,7 +194,9 @@ class Anna:
         now = time.time()
         uptime = int(now - self.start_time)
         days = uptime // 86400
+        uptime = uptime % 86400
         hours = uptime // 3600
+        uptime = uptime % 3600
         mins = uptime // 60
         secs = uptime % 60
         contributors = open('contributors').read().strip()
