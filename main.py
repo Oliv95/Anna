@@ -28,7 +28,6 @@ def main():
                     -------------------------------------------------------------------
                     My source code and licence is available on github.com/Oliv95/Anna"""
     client = discord.Client()
-    markov_file = 'harry_potter_and_the_sorcerss_stone.txt'
     bot = anna.Anna(client,help_text,markov_file)
 
     @client.event
@@ -71,8 +70,6 @@ def main():
         elif message.content.startswith('!reboot'):
             bot.reboot(message)
             exit_code = 100
-        elif message.content.startswith('!say'):
-            bot.say(message)
         elif message.content.startswith('!exit'):
             if bot.exit(message):
                 exit_code = 1

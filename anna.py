@@ -1,7 +1,7 @@
 import discord,logging,re,subprocess,sys,os,mci,markov,random,time
 
 class Anna:
-    def __init__(self,client,help_text="Help text not configured",markov_file='main_log.log'):
+    def __init__(self,client,help_text="Help text not configured"):
         self.admins = []
         self.head_admins = []
         self.email = ""
@@ -11,7 +11,6 @@ class Anna:
         self.logger = None
         self.nick_dic = None
         self.read_conf()
-        self.textGen = markov.Markov(open(markov_file))
         self.login()
         self.start_time = time.time()
 
@@ -181,11 +180,6 @@ class Anna:
 
     def echo_msg(self,message):
         self.client.send_message(message.channel, message.content[5::])
-
-    def say(self,message):
-        size = int(message.content[4::])
-        text = self.textGen.generate_markov_text(size)
-        self.client.send_message(message.channel, text)
 
     def help_msg(self,message):
         self.client.send_message(message.channel, self.help_text)
